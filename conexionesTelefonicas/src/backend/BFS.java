@@ -41,10 +41,10 @@ public class BFS {
 
 
 	private static void agregarLocalidadesNoMarcadas(Set<Localidad> localidadesMarcadas, List<Localidad> vecinosDei) {
-		for(Localidad vecino: vecinosDei) {
+		for(Localidad vecino: vecinosDei)
 			if(!localidadesMarcadas.contains(vecino))
 				L.add(vecino);
-		}
+		
 	}
 	
 	
