@@ -4,67 +4,70 @@ import java.util.LinkedList;
 
 public class ArbolGeneradorMinimo {
 
-	static GrafoLocalidad grafoAGM;
-	static LinkedList<Localidad> verticesMarcados;
+    static GrafoLocalidad grafoAGM;
+    static LinkedList<Localidad> verticesMarcados;
 
-	public static GrafoLocalidad prim(GrafoLocalidad grafo) {
-		if (grafo == null || !BFS.esConexo(grafo)) 
-			throw new IllegalArgumentException();
+    public static GrafoLocalidad prim(GrafoLocalidad grafo)
+    {
+        if (grafo == null || !BFS.esConexo(grafo))
+            throw new IllegalArgumentException();
 
-		// Agrego un vertice el cual sera el vertice origen
-		Localidad origen = grafo.getLocalidades().get(0);
-		grafoAGM = new GrafoLocalidad(origen);
+        // Agrego un vertice el cual sera el vertice origen
+        Localidad origen = grafo.getLocalidades().get(0);
+        grafoAGM = new GrafoLocalidad(origen);
 
-		verticesMarcados = new LinkedList<Localidad>();
-		verticesMarcados.add(origen);
+        verticesMarcados = new LinkedList<Localidad>();
+        verticesMarcados.add(origen);
 
-		CableDeRed aristaMin = new CableDeRed();
-		Localidad verticeNoMarcado = null;
-		
-		LinkedList<CableDeRed> aristas = grafo.getAristas();
+        CableDeRed aristaMin = new CableDeRed();
+        Localidad verticeNoMarcado = null;
 
-		int cantAristas = 0;
-		while (cantAristas < grafo.tamanio() - 1) { 
+        LinkedList<CableDeRed> aristas = grafo.getAristas();
 
-			aristaMin.setCosto(Float.POSITIVE_INFINITY);
+        int cantAristas = 0;
+        while (cantAristas < grafo.tamanio() - 1)
+        {
+            aristaMin.setCosto(Float.POSITIVE_INFINITY);
 
-			// Recorro la lista de aristas del grafo conexo pasado como parametro
-			for (CableDeRed arista : aristas) 
-				if (soloUnoMarcado(arista) && aristaEsMenorQueAristaMin(arista, aristaMin))
-					aristaMin = arista;
-			
-			verticeNoMarcado = obtenerNoMarcado(aristaMin);
-			
-			// Agrego el vertice no marcado a la lista de marcados.
-			grafoAGM.agregarVertice(verticeNoMarcado);
-			verticesMarcados.add(verticeNoMarcado);
+            // Recorro la lista de aristas del grafo conexo pasado como parametro
+            for (CableDeRed arista : aristas)
+                if (soloUnoMarcado(arista) && aristaEsMenorQueAristaMin(arista, aristaMin))
+                    aristaMin = arista;
 
-			// Agrego la arista al grafo AGM
-			grafoAGM.agregarArista(aristaMin.getVertice1(), aristaMin.getVertice2());
-			cantAristas++;
-			
-			aristas.remove(aristaMin);
-		}
+            verticeNoMarcado = obtenerNoMarcado(aristaMin);
 
-		return grafoAGM;
-	}
+            // Agrego el vertice no marcado a la lista de marcados.
+            grafoAGM.agregarVertice(verticeNoMarcado);
+            verticesMarcados.add(verticeNoMarcado);
 
-	private static boolean aristaEsMenorQueAristaMin(CableDeRed arista, CableDeRed aristaMin) {
-		return arista.getCosto() < aristaMin.getCosto();
-	}
+            // Agrego la arista al grafo AGM
+            grafoAGM.agregarArista(aristaMin.getVertice1(), aristaMin.getVertice2());
+            cantAristas++;
 
-	private static boolean soloUnoMarcado(CableDeRed arista) {
-		boolean primerCaso = verticesMarcados.contains(arista.getVertice1())
-				&& !verticesMarcados.contains(arista.getVertice2());
-		boolean segundoCaso = !verticesMarcados.contains(arista.getVertice1())
-				&& verticesMarcados.contains(arista.getVertice2());
-		return primerCaso || segundoCaso;
-	}
+            aristas.remove(aristaMin);
+        }
+        return grafoAGM;
+    }
 
-	private static Localidad obtenerNoMarcado(CableDeRed arista) {
-		if (verticesMarcados.contains(arista.getVertice1()))
-			return arista.getVertice2();
-		return arista.getVertice1();
-	}
+    private static boolean aristaEsMenorQueAristaMin(CableDeRed arista, CableDeRed aristaMin)
+    {
+        return arista.getCosto() < aristaMin.getCosto();
+    }
+
+    private static boolean soloUnoMarcado(CableDeRed arista)
+    {
+        boolean primerCaso = verticesMarcados.contains(arista.getVertice1())
+                && !verticesMarcados.contains(arista.getVertice2());
+        boolean segundoCaso = !verticesMarcados.contains(arista.getVertice1())
+                && verticesMarcados.contains(arista.getVertice2());
+        return primerCaso || segundoCaso;
+    }
+
+    private static Localidad obtenerNoMarcado(CableDeRed arista)
+    {
+        if (verticesMarcados.contains(arista.getVertice1()))
+            return arista.getVertice2();
+        return arista.getVertice1();
+    }
 
 }
