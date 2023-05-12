@@ -11,6 +11,7 @@ import backend.Localidad;
 
 public class ArbolGeneradorMinimoTest
 {
+
     private GrafoLocalidad g;
     private Localidad jose_c_paz;
     private Localidad san_miguel;
@@ -19,57 +20,31 @@ public class ArbolGeneradorMinimoTest
     private Localidad moreno;
     private Localidad villa_del_parque;
 
+    double costoPorKm = 20;
+    double porcentajeSupera300Km = 0.2;
+    double costoProvinciasDistintas = 20;
+
     @Before
     public void setup()
     {
-        jose_c_paz = new Localidad("Jose.C.Paz", "Buenos Aires", 20, 30);
-        san_miguel = new Localidad("San Miguel", "Buenos Aires", 50, 30);
-        pilar = new Localidad("Pilar", "Buenos Aires", 10, 30);
-        bella_vista = new Localidad("Bella Vista", "Buenos Aires", 70, 30);
-        moreno = new Localidad("Moreno", "Buenos Aires", 80, 42);
-        villa_del_parque = new Localidad("Villa Del Parque", "Buenos Aires", 48, 23);
+        jose_c_paz = new Localidad("Jose.C.Paz", "Buenos Aires", 40, 60);
+        san_miguel = new Localidad("San Miguel", "Buenos Aires", 50, 70);
+        pilar = new Localidad("Pilar", "Buenos Aires", 60, 40);
+        bella_vista = new Localidad("Bella Vista", "Buenos Aires", 80, 40);
+        moreno = new Localidad("Moreno", "Buenos Aires", 60, 42);
+        villa_del_parque = new Localidad("Villa Del Parque", "Buenos Aires", 48, -43);
 
-        g = new GrafoLocalidad();
-    }
-
-    private GrafoLocalidad inicializarGrafoInconexo()
-    {
-        GrafoLocalidad g = new GrafoLocalidad(jose_c_paz, pilar, san_miguel, villa_del_parque, bella_vista);
-
-        g.agregarArista(jose_c_paz, moreno);
-        g.agregarArista(jose_c_paz, pilar);
-        g.agregarArista(villa_del_parque, san_miguel);
-
-        return g;
-    }
-
-    private GrafoLocalidad inicializarGrafoCompleto()
-    {
-        GrafoLocalidad g = new GrafoLocalidad(jose_c_paz, pilar, san_miguel, villa_del_parque, bella_vista);
-
-        g.agregarArista(jose_c_paz, pilar);
-        g.agregarArista(jose_c_paz, san_miguel);
-        g.agregarArista(jose_c_paz, villa_del_parque);
-        g.agregarArista(jose_c_paz, bella_vista);
-        g.agregarArista(pilar, san_miguel);
-        g.agregarArista(pilar, villa_del_parque);
-        g.agregarArista(pilar, bella_vista);
-        g.agregarArista(san_miguel, villa_del_parque);
-        g.agregarArista(san_miguel, bella_vista);
-        g.agregarArista(villa_del_parque, bella_vista);
-
-        return g;
+        g = new GrafoLocalidad(costoPorKm, porcentajeSupera300Km, costoProvinciasDistintas);
     }
 
     @Test
     public void agmHappyTest()
     {
         GrafoLocalidad grafoCompleto = inicializarGrafoCompleto();
-
         GrafoLocalidad agm = ArbolGeneradorMinimo.prim(grafoCompleto);
 
-        assertTrue(agm.getAristas().size() == grafoCompleto.getLocalidades().size() - 1);
         assertTrue(agm.getLocalidades().size() == grafoCompleto.getLocalidades().size());
+        assertTrue(agm.getAristas().size() == grafoCompleto.getLocalidades().size() - 1);
     }
 
     @Test (expected = IllegalArgumentException.class)
@@ -91,7 +66,7 @@ public class ArbolGeneradorMinimoTest
     @Test
     public void agmGrafoConexoNoCompleto()
     {
-        g = new GrafoLocalidad(jose_c_paz, san_miguel, pilar, bella_vista, villa_del_parque);
+        g = new GrafoLocalidad(costoPorKm, porcentajeSupera300Km, costoProvinciasDistintas, jose_c_paz, san_miguel, pilar, bella_vista, villa_del_parque);
 
         g.agregarArista(jose_c_paz, bella_vista);
         g.agregarArista(bella_vista, san_miguel);
@@ -102,8 +77,36 @@ public class ArbolGeneradorMinimoTest
 
         GrafoLocalidad agm = ArbolGeneradorMinimo.prim(g);
 
-        assertTrue(agm.getAristas().size() == g.tamanio() - 1);
         assertTrue(agm.tamanio() == g.tamanio());
+        assertTrue(agm.getAristas().size() == g.tamanio() - 1);
+    }
+
+    private GrafoLocalidad inicializarGrafoInconexo()
+    {
+        GrafoLocalidad g = new GrafoLocalidad(costoPorKm, porcentajeSupera300Km, costoProvinciasDistintas, jose_c_paz, pilar, san_miguel, villa_del_parque, bella_vista);
+
+        g.agregarArista(jose_c_paz, moreno);
+        g.agregarArista(jose_c_paz, pilar);
+        g.agregarArista(villa_del_parque, san_miguel);
+
+        return g;
+    }
+
+    private GrafoLocalidad inicializarGrafoCompleto()
+    {
+        GrafoLocalidad g = new GrafoLocalidad(costoPorKm, porcentajeSupera300Km, costoProvinciasDistintas, jose_c_paz, pilar, san_miguel, villa_del_parque, bella_vista);
+
+        g.agregarArista(jose_c_paz, pilar);
+        g.agregarArista(jose_c_paz, san_miguel);
+        g.agregarArista(jose_c_paz, villa_del_parque);
+        g.agregarArista(jose_c_paz, bella_vista);
+        g.agregarArista(pilar, san_miguel);
+        g.agregarArista(pilar, villa_del_parque);
+        g.agregarArista(pilar, bella_vista);
+        g.agregarArista(san_miguel, villa_del_parque);
+        g.agregarArista(san_miguel, bella_vista);
+        g.agregarArista(villa_del_parque, bella_vista);
+        return g;
     }
 
 }

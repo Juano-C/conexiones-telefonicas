@@ -1,12 +1,16 @@
 package tests;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.math.BigDecimal;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import backend.CableDeRed;
 import backend.Localidad;
+import backend.Utilidades;
 
 /* ----si los argumentos no son validos
  * nombre != ""
@@ -14,123 +18,87 @@ import backend.Localidad;
  * -91<latitud<91 
  * -181<longitud<181
  */
-
 public class CableDeRedTest
 {
+
     private Localidad san_miguel;
-    private Localidad _nombreNull;
-    private Localidad _provinciaNull;
-    private Localidad _latitudMenorNull;
-    private Localidad _latitudMayorNull;
-    private Localidad _longitudMenorNull;
-    private Localidad _longitudMayorNull;
-    private Localidad jc_paz;
+    private Localidad jose_c_paz;
     private Localidad muniz;
     private Localidad morris;
 
+    double costoPorKm = 20;
+    double porcentajeSupera300Km = 0.2;
+    double costoProvinciasDistintas = 20;
+    
     @Before
-    public void setup() {
+    public void setup()
+    {
         san_miguel = new Localidad("San Miguel", "Buenos Aires", 50, 30);
 
-        jc_paz = new Localidad("Jc.Paz", "Buenos Aires", 50, 29);
+        jose_c_paz = new Localidad("Jc.Paz", "Buenos Aires", 50, 29);
         muniz = new Localidad("Muñiz", "Buenos Aires", 10, 30);
         morris= new Localidad("Morris", "Cordoba", 10, 30);
-        _nombreNull = new Localidad("", "Buenos Aires", 20, 30);
-
-        _provinciaNull = new Localidad("Prueba", "", 20, 30);
-
-        _latitudMenorNull = new Localidad("Prueba", "Buenos Aires", -91, 30);
-        _latitudMayorNull = new Localidad("Prueba", "Buenos Aires", 91, 30);
-
-        _longitudMenorNull = new Localidad("Prueba", "Buenos Aires", 20, -181);
-        _longitudMayorNull = new Localidad("Prueba", "Buenos Aires", 20, 181);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void nombreInvalidoTest()
-    {
-        CableDeRed.distanciaEnKm(_nombreNull, san_miguel);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void provinciaInvalidaTest()
-    {
-        CableDeRed.distanciaEnKm(_provinciaNull, san_miguel);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void latitudMenorInvalidaTest()
-    {
-        CableDeRed.distanciaEnKm(_latitudMenorNull, san_miguel);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void latitudMayorInvalidaTest()
-    {
-        CableDeRed.distanciaEnKm(_latitudMayorNull, san_miguel);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void longitudMenorInvalidaTest()
-    {
-        CableDeRed.distanciaEnKm(_longitudMenorNull, san_miguel);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void longitudMayorInvalidaTest() {
-        CableDeRed.distanciaEnKm(_longitudMayorNull, san_miguel);
-    }
-
-    // ----------si los km estan en la misma provincia y no supera 300km
-    @Test
-    public void costoSinAgregadoTest()
-    {
-        CableDeRed red = new CableDeRed(jc_paz, san_miguel);
-
-        Double distancia = red.getDistancia();
-        int costo = CableDeRed.getCostoCable();
-
-        assertTrue(red.getCosto().equals((float) (distancia * costo)));
-    }
-
-    // ----------si los km estan en la misma provincia y supera 300km
-    @Test
-    public void costoConKmAgregadoTest()
-    {
-        CableDeRed red = new CableDeRed(jc_paz, muniz);
-
-        Double distancia = red.getDistancia();
-        float costo = CableDeRed.getCostoCable();
-        double bruto=distancia* costo;
-        double porcentajeAdicional = bruto * CableDeRed.getcostoDistanciaSuperaKm();
-
-        assertTrue(red.getCosto().equals((float) (distancia * costo + porcentajeAdicional)));
-    }
-
-    // ----------si los km No estan en la misma provincia y supera 300km
-    @Test
-    public void costoConKmAgregadoYOtraProvinciaTest()
-    {
-        CableDeRed red = new CableDeRed(jc_paz, morris);
-
-        Double distancia = red.getDistancia();
-        float costo = CableDeRed.getCostoCable();
-        double bruto=distancia* costo;
-        double porcentajeAdicional = bruto * CableDeRed.getcostoDistanciaSuperaKm();
-
-        assertTrue(red.getCosto().equals((float) (distancia * costo + porcentajeAdicional)+20));
     }
 
     @Test
-    public void costoConOtraProvinciaTest()
+    public void dosCableDeRedSonIguales()
     {
-        san_miguel= new Localidad("San Miguel", "Cordoba", 50, 30);
-        CableDeRed red = new CableDeRed(jc_paz, san_miguel);
+        BigDecimal costo = new BigDecimal(Utilidades.obtenerCosto(jose_c_paz, san_miguel, 20, 0.2, 20));
+        CableDeRed conexion_1 = new CableDeRed(jose_c_paz, san_miguel, Utilidades.distanciaEnKm(jose_c_paz, san_miguel),costo);
+        CableDeRed conexion_2 = new CableDeRed(jose_c_paz, san_miguel, Utilidades.distanciaEnKm(jose_c_paz, san_miguel),costo);
 
-        Double distancia = red.getDistancia();
-        int costo = CableDeRed.getCostoCable();
+        assertTrue(conexion_1.equals(conexion_2));
+    }
 
-        assertTrue(red.getCosto().equals((float) (distancia * costo+20)));
+    @Test
+    public void dosCablesDeRedNoSonIgualesDistanciaDistinta()
+    {
+        BigDecimal costo = new BigDecimal(Utilidades.obtenerCosto(jose_c_paz, san_miguel, 20, 0.2, 20));
+        CableDeRed conexion_1 = new CableDeRed(jose_c_paz, san_miguel, Utilidades.distanciaEnKm(jose_c_paz, san_miguel),costo);
+        CableDeRed conexion_2 = new CableDeRed(jose_c_paz, san_miguel, Utilidades.distanciaEnKm(jose_c_paz, san_miguel) + 10  ,costo);
+
+        assertFalse(conexion_1.equals(conexion_2));
+    }
+
+    @Test
+    public void dosCableDeRedSonIgualesCostoDistinto()
+    {
+        BigDecimal costo = new BigDecimal(Utilidades.obtenerCosto(jose_c_paz, san_miguel, 20, 0.2, 20));
+        CableDeRed conexion_1 = new CableDeRed(jose_c_paz, san_miguel, Utilidades.distanciaEnKm(jose_c_paz, san_miguel),costo);
+
+        costo = costo.add( new BigDecimal(100));
+        CableDeRed conexion_2 = new CableDeRed(jose_c_paz, san_miguel, Utilidades.distanciaEnKm(jose_c_paz, san_miguel),costo);
+
+        assertFalse(conexion_1.equals(conexion_2));
+    }
+
+    @Test
+    public void dosCableDeRedSonIgualesLocalidadDistinta()
+    {
+        BigDecimal costo = new BigDecimal(Utilidades.obtenerCosto(jose_c_paz, san_miguel, 20, 0.2, 20));
+        CableDeRed conexion_1 = new CableDeRed(jose_c_paz, san_miguel, Utilidades.distanciaEnKm(jose_c_paz, san_miguel),costo);
+        CableDeRed conexion_2 = new CableDeRed(jose_c_paz, muniz, Utilidades.distanciaEnKm(jose_c_paz, san_miguel),costo);
+
+        assertFalse(conexion_1.equals(conexion_2));
+    }
+
+    @Test
+    public void localidadEstaEnCableDeRed()
+    {
+        BigDecimal costo = new BigDecimal(Utilidades.obtenerCosto(jose_c_paz, san_miguel, 20, 0.2, 20));
+        CableDeRed conexion_1 = new CableDeRed(jose_c_paz, san_miguel, Utilidades.distanciaEnKm(jose_c_paz, san_miguel),costo);
+
+        assertTrue(conexion_1.tieneEstaLocalidad(jose_c_paz));
+        assertTrue(conexion_1.tieneEstaLocalidad(san_miguel));
+    }
+
+    @Test
+    public void localidadNoEstaEnCableDeRed()
+    {
+        BigDecimal costo = new BigDecimal(Utilidades.obtenerCosto(jose_c_paz, san_miguel, 20, 0.2, 20));
+        CableDeRed conexion_1 = new CableDeRed(jose_c_paz, san_miguel, Utilidades.distanciaEnKm(jose_c_paz, san_miguel),costo);
+
+        assertFalse(conexion_1.tieneEstaLocalidad(morris));
     }
 
 }

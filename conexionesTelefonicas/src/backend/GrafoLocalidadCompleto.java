@@ -5,20 +5,21 @@ import java.util.LinkedList;
 public class GrafoLocalidadCompleto extends GrafoLocalidad
 {
 
-    public GrafoLocalidadCompleto()
+    public GrafoLocalidadCompleto(double costo, double costoPorProvincia, double porcentajeSupera300km)
     {
-        super();
+        super(costo, costoPorProvincia,porcentajeSupera300km);
     }
 
-    public GrafoLocalidadCompleto(LinkedList<Localidad> listaVertices)
+    public GrafoLocalidadCompleto(LinkedList<Localidad> listaVertices, double costo, double costoPorProvincia, double porcentajeSupera300km)
     {
-        super();
+        super(costo, costoPorProvincia, porcentajeSupera300km);
         agregarVertices(listaVertices);
     }
 
     private void agregarVertices(LinkedList<Localidad> listaVertices)
     {
-        for(Localidad localidad:listaVertices) {
+        for(Localidad localidad:listaVertices)
+        {
             agregarVertice(localidad);
         }
     }
@@ -54,7 +55,6 @@ public class GrafoLocalidadCompleto extends GrafoLocalidad
         {
             acum = acum && this.vecinos.get(localidad).size()-1 == this.vecinos.size();
         }
-
         return acum;
     }
 

@@ -23,6 +23,10 @@ public class BFSTest
     private Localidad moreno;
     private Localidad villa_del_parque;
 
+    double costoPorKm = 20;
+    double porcentajeSupera300Km = 0.2;
+    double costoProvinciasDistintas = 20;
+
     @Before
     public void setup()
     {
@@ -32,14 +36,13 @@ public class BFSTest
         bella_vista = new Localidad("Bella Vista", "Buenos Aires", 70, 30);
         moreno = new Localidad("Moreno", "Buenos Aires", 80, 42);
         villa_del_parque = new Localidad("Villa Del Parque", "Buenos Aires", 48, 23);
-        g = new GrafoLocalidad();
+        g = new GrafoLocalidad(costoPorKm, porcentajeSupera300Km, costoProvinciasDistintas);
     }
-    
 
     @Test
     public void alcanzablesHappyTest()
     {
-        GrafoLocalidad g = new GrafoLocalidad(jose_c_paz, pilar, san_miguel, villa_del_parque, bella_vista);
+        GrafoLocalidad g = new GrafoLocalidad(costoPorKm, porcentajeSupera300Km, costoProvinciasDistintas, jose_c_paz, pilar, san_miguel, villa_del_parque, bella_vista);
 
         g.agregarArista(jose_c_paz, bella_vista);
         g.agregarArista(bella_vista, villa_del_parque);
@@ -83,7 +86,7 @@ public class BFSTest
     }
 
     @Test
-    public void alcanzablesInconexoTest() 
+    public void alcanzablesInconexoTest()
     {
         LinkedList<Localidad> esperadas = new LinkedList<Localidad>();
         esperadas.add(jose_c_paz);
@@ -98,20 +101,20 @@ public class BFSTest
         }
     }
 
-    private GrafoLocalidad inicializarGrafoInconexo()
+    GrafoLocalidad inicializarGrafoInconexo()
     {
-        GrafoLocalidad g = new GrafoLocalidad(jose_c_paz, pilar, san_miguel, villa_del_parque, bella_vista);
+        GrafoLocalidad g = new GrafoLocalidad(costoPorKm, porcentajeSupera300Km, costoProvinciasDistintas, jose_c_paz, pilar, san_miguel, villa_del_parque, bella_vista);
 
         g.agregarArista(jose_c_paz, moreno);
         g.agregarArista(jose_c_paz, pilar);
         g.agregarArista(villa_del_parque, san_miguel);
-
+        
         return g;
     }
 
-    private GrafoLocalidad inicializarGrafoCompleto() 
+    GrafoLocalidad inicializarGrafoCompleto()
     {
-        GrafoLocalidad g = new GrafoLocalidad(jose_c_paz, pilar, san_miguel, villa_del_parque, bella_vista);
+        GrafoLocalidad g = new GrafoLocalidad(costoPorKm, porcentajeSupera300Km, costoProvinciasDistintas, jose_c_paz, pilar, san_miguel, villa_del_parque, bella_vista);
 
         g.agregarArista(jose_c_paz, pilar);
         g.agregarArista(jose_c_paz, san_miguel);
