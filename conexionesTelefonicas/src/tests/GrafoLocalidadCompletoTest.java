@@ -18,6 +18,10 @@ public class GrafoLocalidadCompletoTest
     private Localidad moreno;
     private Localidad villa_del_parque;
 
+    double costoPorKm = 20;
+    double porcentajeSupera300Km = 0.2;
+    double costoProvinciasDistintas = 20;
+
     @Before
     public void setUp()
     {
@@ -28,7 +32,7 @@ public class GrafoLocalidadCompletoTest
         moreno = new Localidad("Moreno", "Buenos Aires", 80, 42);
         villa_del_parque = new Localidad("Villa Del Parque", "Buenos Aires", 48, 23);
 
-        grafo=new GrafoLocalidadCompleto();
+        grafo=new GrafoLocalidadCompleto(costoPorKm, porcentajeSupera300Km, costoProvinciasDistintas);
     }
 
     @Test
@@ -41,6 +45,7 @@ public class GrafoLocalidadCompletoTest
     public void grafoEstaCompleto1AristaTest()
     {
         grafo.agregarVertice(jose_c_paz);
+
         assertTrue(grafo.estaCompleto());
     }
 
@@ -49,6 +54,7 @@ public class GrafoLocalidadCompletoTest
     {
         grafo.agregarVertice(bella_vista);
         grafo.agregarVertice(jose_c_paz);
+
         assertTrue(grafo.estaCompleto());
     }
 
@@ -60,6 +66,7 @@ public class GrafoLocalidadCompletoTest
         grafo.agregarVertice(pilar);
         grafo.agregarVertice(villa_del_parque);
         grafo.agregarVertice(moreno);
+
         assertTrue(grafo.estaCompleto());
     }
 
@@ -72,6 +79,7 @@ public class GrafoLocalidadCompletoTest
         grafo.agregarVertice(villa_del_parque);
         grafo.agregarVertice(moreno);
         grafo.quitarVertice(jose_c_paz);
+
         assertTrue(grafo.estaCompleto());
     }
 
@@ -79,6 +87,7 @@ public class GrafoLocalidadCompletoTest
     public void grafoEstaCompletoVacioSacoVertice()
     {
         grafo.quitarVertice(jose_c_paz);
+
         assertTrue(grafo.estaCompleto());
     }
 
@@ -91,7 +100,7 @@ public class GrafoLocalidadCompletoTest
     @Test(expected = RuntimeException.class)
     public void sacoAristaTest()
     {
-        grafo.quitarArista(jose_c_paz, bella_vista);
+        grafo.quitarArista(jose_c_paz, bella_vista);;
     }
 
     @Test
@@ -100,6 +109,7 @@ public class GrafoLocalidadCompletoTest
         grafo.agregarVertice(bella_vista);
         assertTrue(grafo.tamanio() == 1);
         grafo.quitarVertice(bella_vista);
+
         assertTrue(grafo.tamanio() == 0);
     }
 
@@ -108,9 +118,12 @@ public class GrafoLocalidadCompletoTest
     {
         grafo.agregarVertice(bella_vista);
         grafo.agregarVertice(san_miguel);
+
         assertTrue(grafo.tamanio() == 2);
+
         grafo.quitarVertice(bella_vista);
         grafo.quitarVertice(san_miguel);
+
         assertTrue(grafo.tamanio() == 0);
     }
 
